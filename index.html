@@ -2,17 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>APR'S PARADISE</title>
+  
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+
   <style>
     :root {
-      --bg-dark: #0f1015;
-      --card-bg: #1a1c23;
+      --bg-dark: #0b0c10;
+      --card-bg: #16181f;
       --accent-green: #00e676;
       --text-main: #ffffff;
-      --text-muted: #9e9e9e;
-      --border-color: #2b2e3b;
+      --text-muted: #8e9297;
+      --border-color: #242734;
     }
 
     * {
@@ -20,6 +23,7 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -28,16 +32,14 @@
       min-height: 100vh;
     }
 
-    /* Gatekeeper Login Screen */
     #gatekeeper {
       position: fixed;
       inset: 0;
-      background: #090a0f;
+      background: #08090c;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 999;
+      z-index: 999999;
       padding: 20px;
     }
 
@@ -45,39 +47,42 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 30px;
+      padding: 28px 20px;
       width: 100%;
-      max-width: 360px;
+      max-width: 340px;
       text-align: center;
     }
 
     .login-box h1 {
       color: var(--accent-green);
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       margin-bottom: 20px;
       letter-spacing: 1px;
+      font-weight: 800;
     }
 
     .login-box input {
       width: 100%;
-      padding: 12px;
-      border-radius: 6px;
+      padding: 14px;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
-      background: #111319;
+      background: #0f1015;
       color: #fff;
       font-size: 1rem;
-      margin-bottom: 15px;
+      margin-bottom: 14px;
       text-align: center;
+      font-weight: bold;
       letter-spacing: 2px;
+      outline: none;
     }
 
     .login-box button {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       background: var(--accent-green);
       border: none;
-      border-radius: 6px;
-      font-weight: bold;
+      border-radius: 8px;
+      font-weight: 800;
       color: #000;
       font-size: 1rem;
       cursor: pointer;
@@ -86,34 +91,33 @@
     .error-msg {
       color: #ff5252;
       font-size: 0.85rem;
-      margin-top: 10px;
+      margin-top: 12px;
       display: none;
     }
 
-    /* Dashboard */
     #app {
       display: none;
-      max-width: 1100px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 14px;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 16px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--border-color);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     header h1 {
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       color: var(--accent-green);
+      font-weight: 800;
     }
 
-    .player-section {
-      margin-bottom: 24px;
+    .player-container {
       background: #000;
       border-radius: 10px;
       overflow: hidden;
@@ -128,7 +132,7 @@
     }
 
     .player-meta {
-      padding: 12px 16px;
+      padding: 12px 14px;
       background: var(--card-bg);
       display: flex;
       justify-content: space-between;
@@ -136,19 +140,68 @@
     }
 
     .current-channel {
-      font-weight: bold;
-      font-size: 1rem;
+      font-weight: 700;
+      font-size: 0.95rem;
     }
 
     .current-quality {
       color: var(--accent-green);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
     }
 
-    .nav-tabs {
-      display: flex;
+    /* Live Switcher Controls */
+    .stream-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-group {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 8px 10px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control-group label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .control-group select {
+      background: #0f1015;
+      color: #fff;
+      border: 1px solid var(--border-color);
+      padding: 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: #191c26;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     .tab-btn {
@@ -158,20 +211,27 @@
       border: 1px solid var(--border-color);
       color: var(--text-muted);
       border-radius: 6px;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 0.85rem;
       cursor: pointer;
     }
 
     .tab-btn.active {
-      background: #252836;
+      background: #202430;
       border-color: var(--accent-green);
       color: #fff;
     }
 
     .channel-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .channel-list {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     .channel-card {
@@ -186,7 +246,7 @@
 
     .channel-title {
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .quality-buttons {
@@ -196,41 +256,41 @@
     }
 
     .q-btn {
-      padding: 6px 4px;
+      padding: 8px 4px;
       font-size: 0.75rem;
+      font-weight: 700;
       border-radius: 4px;
       border: 1px solid var(--border-color);
-      background: #12141a;
+      background: #0f1015;
       color: #fff;
       cursor: pointer;
       text-align: center;
     }
 
-    .q-btn:hover {
+    .q-btn:active {
       border-color: var(--accent-green);
+      color: var(--accent-green);
     }
   </style>
 </head>
 <body>
 
-  <!-- Login Gate -->
   <div id="gatekeeper">
     <div class="login-box">
       <h1>APR'S PARADISE</h1>
-      <input type="text" id="secretCode" placeholder="ENTER SECRET CODE" autocomplete="off" autocapitalize="characters" />
-      <button type="button" id="enterBtn" onclick="checkAccess()">ENTER</button>
+      <input type="text" id="secretCode" placeholder="ENTER SECRET CODE" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+      <button type="button" id="enterBtn">ENTER</button>
       <div class="error-msg" id="errorMsg">Incorrect Code. Try again.</div>
     </div>
   </div>
 
-  <!-- Dashboard -->
   <div id="app">
     <header>
       <h1>APR'S PARADISE</h1>
-      <span style="font-size: 0.8rem; color: var(--text-muted);">LIVE SPORTS</span>
+      <span style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer;" onclick="logout()">LOGOUT</span>
     </header>
 
-    <div class="player-section">
+    <div class="player-container">
       <video id="mainPlayer" controls autoplay playsinline></video>
       <div class="player-meta">
         <span class="current-channel" id="nowPlayingTitle">Select a channel below</span>
@@ -238,9 +298,26 @@
       </div>
     </div>
 
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchSection('live')">24/7 CHANNELS</button>
-      <button class="tab-btn" onclick="switchSection('match')">MATCH TIME ONLY</button>
+    <div class="stream-controls">
+      <div class="control-group">
+        <label>Video Quality</label>
+        <select id="videoTrackSelect" onchange="changeVideoQuality()">
+          <option value="-1">Auto</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Audio / Language</label>
+        <select id="audioTrackSelect" onchange="changeAudioTrack()">
+          <option value="-1">Default</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="status-badge" id="playerStatus">Web Player Ready</div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tabLive" onclick="showLive()">24/7 CHANNELS</button>
+      <button class="tab-btn" id="tabMatch" onclick="showMatch()">MATCH TIME ONLY</button>
     </div>
 
     <div id="liveSection" class="channel-list"></div>
@@ -248,110 +325,267 @@
   </div>
 
   <script>
-    const SECRET = "WORLDWIDE2026";
-    let hlsInstance = null;
+    var PASS = "WORLDWIDE2026";
+    var hlsInstance = null;
+    var dashInstance = null;
+    var activeType = null;
+    var SSL_PROXY = "https://api.allorigins.win/raw?url=";
 
-    const channels = [
-      { id: "fox501", name: "FOX 501 (AUSTRALIA)", section: "live", stable: "", high: "", low: "" },
-      { id: "skynz", name: "SKY SPORTS (NEW ZEALAND)", section: "live", stable: "", high: "", low: "" },
-      { id: "skycricket", name: "SKY SPORTS CRICKET (LONDON)", section: "live", stable: "", high: "", low: "" },
-      { id: "skymain", name: "SKY SPORTS MAIN EVENT (LONDON)", section: "live", stable: "", high: "", low: "" },
-      { id: "skyuhd", name: "SKY SPORT UHD (LONDON)", section: "live", stable: "", high: "", low: "" },
-      { id: "willow1", name: "WILLOW (AMERICA)", section: "live", stable: "", high: "", low: "" },
-      { id: "willow2", name: "WILLOW 2 (AMERICA)", section: "live", stable: "", high: "", low: "" },
+    var channelData = [
+      { name: "FOX 501 (AUSTRALIA)", section: "live", stable: "", high: "", low: "" },
+      { name: "SKY SPORTS (NEW ZEALAND)", section: "live", stable: "", high: "", low: "" },
+      { name: "SKY SPORTS CRICKET (LONDON)", section: "live", stable: "", high: "", low: "" },
+      { name: "SKY SPORTS MAIN EVENT (LONDON)", section: "live", stable: "", high: "", low: "" },
+      { name: "SKY SPORT UHD (LONDON)", section: "live", stable: "", high: "", low: "" },
+      { name: "WILLOW (AMERICA)", section: "live", stable: "", high: "", low: "" },
+      { name: "WILLOW 2 (AMERICA)", section: "live", stable: "", high: "", low: "" },
       { 
-        id: "hub1", 
         name: "HUB SPORTS (SINGAPORE)", 
         section: "live", 
         stable: "", 
         high: "http://ossyott.site:80/live/3X7L45AKL2351JY/rd1UinOTM7/1090650.m3u8", 
         low: "" 
       },
-      { id: "hub2", name: "HUB SPORTS (SINGAPORE) [S2]", section: "live", stable: "", high: "", low: "" },
-      { id: "star", name: "STAR SPORTS (INDIA)", section: "live", stable: "", high: "", low: "" },
-      { id: "sony", name: "SONY SPORTS (INDIA)", section: "live", stable: "", high: "", low: "" },
-      { id: "tnt", name: "TNT SPORTS (LONDON)", section: "live", stable: "", high: "", low: "" },
-      { id: "match1", name: "MATCH EVENT 1", section: "match", stable: "", high: "", low: "" },
-      { id: "match2", name: "MATCH EVENT 2", section: "match", stable: "", high: "", low: "" }
+      { name: "HUB SPORTS (SINGAPORE) [S2]", section: "live", stable: "", high: "", low: "" },
+      { name: "STAR SPORTS (INDIA)", section: "live", stable: "", high: "", low: "" },
+      { name: "SONY SPORTS (INDIA)", section: "live", stable: "", high: "", low: "" },
+      { name: "TNT SPORTS (LONDON)", section: "live", stable: "", high: "", low: "" },
+      { name: "HIGH QUALITY SOURCE (10-15 MBPS)", section: "match", stable: "", high: "", low: "" },
+      { name: "LOW QUALITY SOURCE (4-6 MBPS)", section: "match", stable: "", high: "", low: "" },
+      { name: "STABLE SOURCE (4-8 MBPS)", section: "match", stable: "", high: "", low: "" }
     ];
 
-    function checkAccess() {
-      const entered = document.getElementById("secretCode").value.trim().toUpperCase();
-      if (entered === SECRET) {
-        document.getElementById("gatekeeper").style.display = "none";
-        document.getElementById("app").style.display = "block";
-        buildChannelGrids();
+    function unlockApp() {
+      document.getElementById("gatekeeper").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      localStorage.setItem("apr_auth", "true");
+      renderChannels();
+    }
+
+    function logout() {
+      localStorage.removeItem("apr_auth");
+      location.reload();
+    }
+
+    function checkKey() {
+      var input = document.getElementById("secretCode").value || "";
+      var clean = input.replace(/\s+/g, '').toUpperCase();
+      if (clean === PASS) {
+        unlockApp();
       } else {
         document.getElementById("errorMsg").style.display = "block";
       }
     }
 
-    function switchSection(type) {
-      const tabs = document.querySelectorAll(".tab-btn");
-      tabs.forEach(t => t.classList.remove("active"));
-      if (type === 'live') {
-        tabs[0].classList.add("active");
-        document.getElementById("liveSection").style.display = "grid";
-        document.getElementById("matchSection").style.display = "none";
-      } else {
-        tabs[1].classList.add("active");
-        document.getElementById("liveSection").style.display = "none";
-        document.getElementById("matchSection").style.display = "grid";
-      }
+    document.getElementById("enterBtn").addEventListener("click", checkKey);
+    document.getElementById("secretCode").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") { checkKey(); }
+    });
+
+    if (localStorage.getItem("apr_auth") === "true") {
+      unlockApp();
     }
 
-    function playStream(channelName, url, qualityLabel) {
-      if (!url) {
-        alert("No stream URL linked yet for this source.");
+    function showLive() {
+      document.getElementById("tabLive").className = "tab-btn active";
+      document.getElementById("tabMatch").className = "tab-btn";
+      document.getElementById("liveSection").style.display = "grid";
+      document.getElementById("matchSection").style.display = "none";
+    }
+
+    function showMatch() {
+      document.getElementById("tabLive").className = "tab-btn";
+      document.getElementById("tabMatch").className = "tab-btn active";
+      document.getElementById("liveSection").style.display = "none";
+      document.getElementById("matchSection").style.display = "grid";
+    }
+
+    function resetSelectors() {
+      var vSel = document.getElementById("videoTrackSelect");
+      var aSel = document.getElementById("audioTrackSelect");
+      vSel.innerHTML = '<option value="-1">Auto</option>';
+      aSel.innerHTML = '<option value="-1">Default</option>';
+    }
+
+    function stream(name, rawUrl, qName) {
+      if (!rawUrl || rawUrl.length < 5) {
+        alert("Source link not added yet!");
         return;
       }
-      const video = document.getElementById("mainPlayer");
-      document.getElementById("nowPlayingTitle").innerText = channelName;
-      document.getElementById("nowPlayingQuality").innerText = qualityLabel;
 
-      if (Hls.isSupported() && url.includes(".m3u8")) {
-        if (hlsInstance) { hlsInstance.destroy(); }
-        hlsInstance = new Hls();
-        hlsInstance.loadSource(url);
+      var video = document.getElementById("mainPlayer");
+      var status = document.getElementById("playerStatus");
+      document.getElementById("nowPlayingTitle").innerText = name;
+      document.getElementById("nowPlayingQuality").innerText = qName;
+      status.innerText = "Loading stream...";
+      resetSelectors();
+
+      // Clean up previous instances
+      if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+      if (dashInstance) { dashInstance.reset(); dashInstance = null; }
+
+      var targetUrl = rawUrl;
+      if (rawUrl.startsWith("http://")) {
+        targetUrl = SSL_PROXY + encodeURIComponent(rawUrl);
+      }
+
+      // Check if stream is MPEG-DASH (.mpd)
+      if (rawUrl.includes(".mpd")) {
+        activeType = "dash";
+        dashInstance = dashjs.MediaPlayer().create();
+        dashInstance.initialize(video, targetUrl, true);
+
+        dashInstance.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function () {
+          status.innerText = "● LIVE MPEG-DASH STREAMING";
+          populateDashTracks();
+        });
+
+        dashInstance.on(dashjs.MediaPlayer.events.ERROR, function() {
+          status.innerText = "Error loading MPD stream.";
+        });
+      } 
+      // Handle HLS (.m3u8)
+      else if (window.Hls && Hls.isSupported()) {
+        activeType = "hls";
+        hlsInstance = new Hls({
+          enableWorker: true,
+          xhrSetup: function(xhr, url) {
+            if (url.startsWith("http://")) {
+              xhr.open('GET', SSL_PROXY + encodeURIComponent(url), true);
+            }
+          }
+        });
+
+        hlsInstance.loadSource(targetUrl);
         hlsInstance.attachMedia(video);
-        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
+          status.innerText = "● LIVE HLS STREAMING";
+          populateHlsTracks();
+          video.play().catch(function() {
+            status.innerText = "Tap video to play";
+          });
+        });
+
+        hlsInstance.on(Hls.Events.ERROR, function(event, data) {
+          if (data.fatal) {
+            status.innerText = "Reconnecting stream...";
+            hlsInstance.startLoad();
+          }
+        });
       } else {
-        video.src = url;
+        video.src = targetUrl;
         video.play();
       }
     }
 
-    function buildChannelGrids() {
-      const liveBox = document.getElementById("liveSection");
-      const matchBox = document.getElementById("matchSection");
-      liveBox.innerHTML = "";
-      matchBox.innerHTML = "";
+    /* Track Management for HLS */
+    function populateHlsTracks() {
+      var vSel = document.getElementById("videoTrackSelect");
+      var aSel = document.getElementById("audioTrackSelect");
 
-      channels.forEach(ch => {
-        const card = document.createElement("div");
-        card.className = "channel-card";
-        card.innerHTML = `
-          <div class="channel-title">${ch.name}</div>
-          <div class="quality-buttons">
-            <button class="q-btn" onclick="playStream('${ch.name}', '${ch.stable}', 'STABLE (4-8 MBPS)')">STABLE</button>
-            <button class="q-btn" onclick="playStream('${ch.name}', '${ch.high}', 'HIGH (10-15 MBPS)')">HIGH</button>
-            <button class="q-btn" onclick="playStream('${ch.name}', '${ch.low}', 'LOW (4-6 MBPS)')">LOW</button>
-          </div>
-        `;
-        if (ch.section === "live") {
-          liveBox.appendChild(card);
+      if (hlsInstance.levels && hlsInstance.levels.length > 0) {
+        vSel.innerHTML = '<option value="-1">Auto</option>';
+        hlsInstance.levels.forEach(function(lvl, i) {
+          var label = (lvl.height ? lvl.height + "p" : "") + " (" + Math.round(lvl.bitrate / 1000) + " kbps)";
+          var opt = document.createElement("option");
+          opt.value = i;
+          opt.innerText = label;
+          vSel.appendChild(opt);
+        });
+      }
+
+      if (hlsInstance.audioTracks && hlsInstance.audioTracks.length > 1) {
+        aSel.innerHTML = '';
+        hlsInstance.audioTracks.forEach(function(track, i) {
+          var opt = document.createElement("option");
+          opt.value = i;
+          opt.innerText = track.name || ("Track " + (i + 1));
+          aSel.appendChild(opt);
+        });
+      }
+    }
+
+    /* Track Management for DASH (.mpd) */
+    function populateDashTracks() {
+      var vSel = document.getElementById("videoTrackSelect");
+      var aSel = document.getElementById("audioTrackSelect");
+
+      var bitrates = dashInstance.getBitrateInfoListFor("video");
+      if (bitrates && bitrates.length > 0) {
+        vSel.innerHTML = '<option value="-1">Auto</option>';
+        bitrates.forEach(function(b, i) {
+          var label = (b.height ? b.height + "p" : "") + " (" + Math.round(b.bitrate / 1000) + " kbps)";
+          var opt = document.createElement("option");
+          opt.value = i;
+          opt.innerText = label;
+          vSel.appendChild(opt);
+        });
+      }
+
+      var audioTracks = dashInstance.getTracksFor("audio");
+      if (audioTracks && audioTracks.length > 1) {
+        aSel.innerHTML = '';
+        audioTracks.forEach(function(track, i) {
+          var opt = document.createElement("option");
+          opt.value = i;
+          opt.innerText = track.lang || ("Audio " + (i + 1));
+          aSel.appendChild(opt);
+        });
+      }
+    }
+
+    function changeVideoQuality() {
+      var selVal = parseInt(document.getElementById("videoTrackSelect").value);
+      if (activeType === "hls" && hlsInstance) {
+        hlsInstance.currentLevel = selVal; // -1 is auto
+      } else if (activeType === "dash" && dashInstance) {
+        if (selVal === -1) {
+          dashInstance.updateSettings({ streaming: { abr: { autoSwitchBitrate: { video: true } } } });
         } else {
-          matchBox.appendChild(card);
+          dashInstance.updateSettings({ streaming: { abr: { autoSwitchBitrate: { video: false } } } });
+          dashInstance.setQualityFor("video", selVal);
+        }
+      }
+    }
+
+    function changeAudioTrack() {
+      var selVal = parseInt(document.getElementById("audioTrackSelect").value);
+      if (selVal === -1) return;
+      if (activeType === "hls" && hlsInstance) {
+        hlsInstance.audioTrack = selVal;
+      } else if (activeType === "dash" && dashInstance) {
+        var audioTracks = dashInstance.getTracksFor("audio");
+        if (audioTracks[selVal]) {
+          dashInstance.setCurrentTrack(audioTracks[selVal]);
+        }
+      }
+    }
+
+    function renderChannels() {
+      var liveContainer = document.getElementById("liveSection");
+      var matchContainer = document.getElementById("matchSection");
+      liveContainer.innerHTML = "";
+      matchContainer.innerHTML = "";
+
+      channelData.forEach(function(c) {
+        var card = document.createElement("div");
+        card.className = "channel-card";
+        card.innerHTML = 
+          '<div class="channel-title">' + c.name + '</div>' +
+          '<div class="quality-buttons">' +
+            '<button class="q-btn" onclick="stream(\'' + c.name + '\', \'' + c.stable + '\', \'STABLE\')">STABLE</button>' +
+            '<button class="q-btn" onclick="stream(\'' + c.name + '\', \'' + c.high + '\', \'HIGH\')">HIGH</button>' +
+            '<button class="q-btn" onclick="stream(\'' + c.name + '\', \'' + c.low + '\', \'LOW\')">LOW</button>' +
+          '</div>';
+
+        if (c.section === "live") {
+          liveContainer.appendChild(card);
+        } else {
+          matchContainer.appendChild(card);
         }
       });
     }
-
-    // Allow hitting Enter on mobile keyboard
-    document.getElementById("secretCode").addEventListener("keyup", function(event) {
-      if (event.key === "Enter") {
-        checkAccess();
-      }
-    });
   </script>
 </body>
 </html>
