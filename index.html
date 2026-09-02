@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APR'S PARADISE</title>
-  <!-- Hls.js for m3u8 streaming support -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     :root {
@@ -29,7 +28,7 @@
       min-height: 100vh;
     }
 
-    /* Passcode Screen */
+    /* Gatekeeper Login Screen */
     #gatekeeper {
       position: fixed;
       inset: 0;
@@ -91,7 +90,7 @@
       display: none;
     }
 
-    /* Main Dashboard */
+    /* Dashboard */
     #app {
       display: none;
       max-width: 1100px;
@@ -113,7 +112,6 @@
       color: var(--accent-green);
     }
 
-    /* Video Player Wrapper */
     .player-section {
       margin-bottom: 24px;
       background: #000;
@@ -147,7 +145,6 @@
       font-size: 0.85rem;
     }
 
-    /* Section Navigation */
     .nav-tabs {
       display: flex;
       gap: 10px;
@@ -171,7 +168,6 @@
       color: #fff;
     }
 
-    /* Channel Grid */
     .channel-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -217,12 +213,12 @@
 </head>
 <body>
 
-  <!-- Gatekeeper / Login -->
+  <!-- Login Gate -->
   <div id="gatekeeper">
     <div class="login-box">
       <h1>APR'S PARADISE</h1>
-      <input type="password" id="secretCode" placeholder="ENTER SECRET CODE" />
-      <button onclick="checkAccess()">ENTER</button>
+      <input type="text" id="secretCode" placeholder="ENTER SECRET CODE" autocomplete="off" autocapitalize="characters" />
+      <button type="button" id="enterBtn" onclick="checkAccess()">ENTER</button>
       <div class="error-msg" id="errorMsg">Incorrect Code. Try again.</div>
     </div>
   </div>
@@ -234,7 +230,6 @@
       <span style="font-size: 0.8rem; color: var(--text-muted);">LIVE SPORTS</span>
     </header>
 
-    <!-- Embedded Player -->
     <div class="player-section">
       <video id="mainPlayer" controls autoplay playsinline></video>
       <div class="player-meta">
@@ -243,16 +238,12 @@
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchSection('live')">24/7 CHANNELS</button>
       <button class="tab-btn" onclick="switchSection('match')">MATCH TIME ONLY</button>
     </div>
 
-    <!-- Live Channels Container -->
     <div id="liveSection" class="channel-list"></div>
-
-    <!-- Match Time Only Container -->
     <div id="matchSection" class="channel-list" style="display: none;"></div>
   </div>
 
@@ -260,7 +251,6 @@
     const SECRET = "WORLDWIDE2026";
     let hlsInstance = null;
 
-    // Stream database structure
     const channels = [
       { id: "fox501", name: "FOX 501 (AUSTRALIA)", section: "live", stable: "", high: "", low: "" },
       { id: "skynz", name: "SKY SPORTS (NEW ZEALAND)", section: "live", stable: "", high: "", low: "" },
@@ -274,8 +264,7 @@
         name: "HUB SPORTS (SINGAPORE)", 
         section: "live", 
         stable: "", 
-        high: "http://ossyott.site:80/live/3X7L45AKL2351JY/rd1UinOTM7/1090650.m3u8
-", 
+        high: "http://ossyott.site:80/live/3X7L45AKL2351JY/rd1UinOTM7/1090650.m3u8", 
         low: "" 
       },
       { id: "hub2", name: "HUB SPORTS (SINGAPORE) [S2]", section: "live", stable: "", high: "", low: "" },
@@ -287,7 +276,7 @@
     ];
 
     function checkAccess() {
-      const entered = document.getElementById("secretCode").value.trim();
+      const entered = document.getElementById("secretCode").value.trim().toUpperCase();
       if (entered === SECRET) {
         document.getElementById("gatekeeper").style.display = "none";
         document.getElementById("app").style.display = "block";
@@ -356,6 +345,13 @@
         }
       });
     }
+
+    // Allow hitting Enter on mobile keyboard
+    document.getElementById("secretCode").addEventListener("keyup", function(event) {
+      if (event.key === "Enter") {
+        checkAccess();
+      }
+    });
   </script>
 </body>
 </html>
