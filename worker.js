@@ -3,7 +3,7 @@ export default {
     const url = new URL(request.url);
     const targetUrl = url.searchParams.get("url");
 
-    // Handle browser pre-flight CORS check
+    // Handle browser CORS pre-flight checks
     if (request.method === "OPTIONS") {
       return new Response(null, {
         headers: {
@@ -15,7 +15,10 @@ export default {
     }
 
     if (!targetUrl) {
-      return new Response("Proxy is Active! Ready to stream.", { status: 200 });
+      return new Response("Proxy is Active! Ready to stream.", { 
+        status: 200,
+        headers: { "Access-Control-Allow-Origin": "*" }
+      });
     }
 
     try {
@@ -34,11 +37,9 @@ export default {
         let text = await response.text();
         const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf("/") + 1);
 
-        // Rewrite every URL inside the playlist so ALL sub-playlists & chunks pass through the proxy
         const modified = text.split("\n").map(line => {
           let trimmed = line.trim();
           if (!trimmed || trimmed.startsWith("#")) {
-            // Check for URI inside tags like #EXT-X-KEY:METHOD=...,URI="..."
             if (trimmed.includes('URI="')) {
               return trimmed.replace(/URI="([^"]+)"/, (match, uri) => {
                 let absolute = uri.startsWith("http") ? uri : (new URL(uri, baseUrl)).href;
@@ -66,7 +67,7 @@ export default {
       // Pass TS/MP4 video chunks directly with full CORS
       const newHeaders = new Headers(response.headers);
       newHeaders.set("Access-Control-Allow-Origin", "*");
-      newHeaders.set("Access-Control-Allow-Methods": "GET, HEAD, OPTIONS");
+      newHeaders.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
 
       return new Response(response.body, {
         status: response.status,
